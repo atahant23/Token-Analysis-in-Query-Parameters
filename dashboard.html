@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Control Center | Vulnerability Lab</title>
+    <style>
+        body { background-color: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; padding: 40px; line-height: 1.6; }
+        .audit-container { max-width: 900px; margin: 0 auto; background: #161b22; border: 1px solid #30363d; padding: 40px; border-radius: 12px; }
+        .header { border-bottom: 2px solid #238636; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+        .status-badge { background: #238636; color: white; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .critical-warning { background: rgba(248, 81, 73, 0.1); border-left: 5px solid #f85149; padding: 20px; color: #f85149; margin: 25px 0; }
+        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        .data-card { background: #0d1117; border: 1px solid #30363d; padding: 20px; border-radius: 8px; }
+        .data-card h4 { margin-top: 0; color: #58a6ff; font-size: 14px; text-transform: uppercase; }
+        code { color: #ffa657; font-family: 'Courier New', monospace; font-size: 13px; word-break: break-all; }
+        .remediation { margin-top: 30px; padding: 20px; background: #1c2128; border: 1px solid #58a6ff; border-radius: 8px; }
+        .remediation h3 { color: #58a6ff; margin-top: 0; }
+        .leak-test-box { margin-top: 20px; border: 1px solid #30363d; padding: 20px; border-radius: 8px; background: rgba(88, 166, 255, 0.05); }
+        .leak-test-btn { display: inline-block; background: #21262d; color: #238636; padding: 10px 15px; border: 1px solid #238636; border-radius: 6px; text-decoration: none; font-weight: bold; margin-top: 10px; }
+        .leak-test-btn:hover { background: #238636; color: white; }
+    </style>
+</head>
+<body>
+    <div class="audit-container">
+        <div class="header">
+            <h1>Admin Dashboard</h1>
+            <span class="status-badge">AUTHENTICATED</span>
+        </div>
+
+        <p>Welcome back, <strong id="userLabel" style="color:#58a6ff;"></strong>. Your session is currently active.</p>
+
+        <div class="critical-warning">
+            <strong>VULNERABILITY DETECTED: CWE-598</strong><br>
+            Sensitive information (Session Token & Access Level) was transmitted via the URI query string. 
+            This data is now exposed in browser history, server logs, and Referer headers.
+        </div>
+
+        <div class="data-grid">
+            <div class="data-card">
+                <h4>Full Exposure URL</h4>
+                <code id="fullUrl"></code>
+            </div>
+            <div class="data-card">
+                <h4>Extracted Session Token</h4>
+                <code id="sessionToken"></code>
+            </div>
+        </div>
+
+        <div style="background: #0d1117; border: 1px solid #58a6ff; padding: 20px; margin-top: 20px; border-radius: 8px;">
+            <h3 style="color: #f85149; margin-top: 0;">🛑 Security Audit Findings</h3>
+            <p style="font-size: 13px;">
+                <strong>Vulnerability:</strong> Sensitive Information in URL Query String<br>
+                <strong>CWE ID:</strong> <a href="https://cwe.mitre.org/data/definitions/598.html" target="_blank" style="color: #58a6ff;">CWE-598</a><br>
+                <strong>Risk Level:</strong> <span style="color: #ffa657;">MEDIUM (CVSS 6.1)</span><br>
+                <strong>Observed Leakage:</strong> User Credentials & Session Identifiers are visible in <code>document.referrer</code> and <code>window.history</code>.
+            </p>
+        </div>
+
+        <div class="leak-test-box">
+            <h4 style="margin-top:0; color: #58a6ff;">🔗 External Leak Test (Referer Header)</h4>
+            <p style="font-size: 13px; color: #8b949e;">Clicking the link below simulates a user navigating to a third-party site. This proves that your <strong>session_token</strong> is leaked via the HTTP Referer header.</p>
+            <a href="https://httpbin.org/get" target="_blank" class="leak-test-btn">Test Token Leak to External Site →</a>
+        </div>
+
+        <div class="remediation">
+            <h3>Remediation Strategy</h3>
+            <ul style="font-size: 14px; color: #8b949e;">
+                <li>Replace GET method with <strong>HTTP POST</strong> for authentication.</li>
+                <li>Store session identifiers in <strong>HttpOnly & Secure</strong> Cookies.</li>
+                <li>Implement <strong>HSTS</strong> to ensure encrypted transmission.</li>
+                <li>Apply <code>Cache-Control: no-store</code> to prevent browser indexing.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        document.getElementById('userLabel').innerText = params.get('user') || "Unknown Analyst";
+        document.getElementById('fullUrl').innerText = window.location.href;
+        document.getElementById('sessionToken').innerText = params.get('session_token') || "NULL";
+    </script>
+</body>
+</html>

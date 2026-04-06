@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Auth Gateway | Secure Access</title>
+    <style>
+        :root { --primary: #58a6ff; --bg: #0d1117; --panel: #161b22; --border: #30363d; --success: #238636; }
+        body { background-color: var(--bg); color: var(--primary); font-family: 'Inter', -apple-system, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .auth-container { background: var(--panel); border: 1px solid var(--border); padding: 40px; border-radius: 12px; width: 400px; box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
+        h2 { text-align: center; color: #f0f6fc; margin-bottom: 8px; }
+        p.subtitle { text-align: center; font-size: 13px; color: #8b949e; margin-bottom: 25px; }
+        .field { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500; }
+        input { background: var(--bg); border: 1px solid var(--border); color: #c9d1d9; padding: 12px; width: 100%; border-radius: 8px; box-sizing: border-box; transition: 0.2s; }
+        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2); }
+        button { background: var(--success); color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 16px; margin-top: 15px; }
+        button:hover { filter: brightness(1.1); }
+        .vuln-note { font-size: 11px; color: #f85149; margin-top: 20px; text-align: center; opacity: 0.7; }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <h2>System Authorization</h2>
+        <p class="subtitle">Internal Access Point - Corporate Network</p>
+        
+        <div class="field">
+            <label>Employee ID / Username</label>
+            <input type="text" id="username" placeholder="username">
+        </div>
+        
+        <div class="field">
+            <label>Security Credential (Password)</label>
+            <input type="password" id="password" placeholder="••••••••">
+        </div>
+        
+        <button onclick="processAuth()">Authenticate</button>
+        
+        <div class="vuln-note">
+            SECURITY NOTICE: This gateway uses GET-based session token transmission (Vulnerable Path).
+        </div>
+    </div>
+
+    <script>
+        function processAuth() {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+
+            // Static Credentials for the Proof of Concept
+            const MASTER_USER = "A_t340623";
+            const MASTER_PASS = "1q2w3e4r5t";
+
+            if (user === MASTER_USER && pass === MASTER_PASS) {
+                // GENERATING VULNERABLE SESSION PARAMETERS
+                const timestamp = new Date().getTime();
+                const sessionID = "SESSID_" + btoa(user) + "_" + timestamp;
+                const accessLevel = "ADMIN_FULL_ACCESS";
+
+                // REDIRECTION LEAK: Sensitive data is appended to the URL string
+                window.location.href = `dashboard.html?user=${user}&access=${accessLevel}&session_token=${sessionID}&status=active`;
+            } else {
+                alert("Invalid Credentials. Unauthorized access attempt logged.");
+            }
+        }
+    </script>
+</body>
+</html>
