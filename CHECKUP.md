@@ -109,3 +109,18 @@ Healthy open-source engineering demands discipline, CI/CD, and properly formatte
 > _"Bu sistem statik bir kağıt sınavı değil, canlı bir yazılım ekosistemidir. Siz commit atmasanız bile sistem periyodik olarak açık kaynak sağlık taramasını tekrarlar. Kodunuz yerinde saysa da teknoloji ve beklentiler ilerler."_ — **K. Arasteh**
 
 You can continuously improve your repository up until the final deadline. Pushing cleanly structured commits and refactoring your architecture will immediately trigger the AI engine to update your metrics dynamically.
+
+---
+
+## 🤖 AI Agentic Code Review (Deep-Dive)
+
+### 🧠 Code Quality & Architecture
+**Rating**: ⭐ Basic (Frontend-Only Demo)
+The project consists of HTML files (dashboard.html, login.html) demonstrating token exposure in query parameters. Limited to client-side demonstration without backend implementation.
+
+### ⚠️ Areas for Improvement
+- Needs a backend server to demonstrate the actual vulnerability in server logs
+- Consider adding proxy log analysis to show token leakage in access logs
+- No tests, Docker, or CI/CD
+
+**Verdict**: A conceptual starting point that needs backend implementation to fully demonstrate the token-in-query-params vulnerability.
